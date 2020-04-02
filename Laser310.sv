@@ -146,11 +146,13 @@ assign LED_USER  = ioctl_download;
 localparam CONF_STR = {
         "Laser;;",
         "-;",
+        "F1,VZ ,Load VZ Tape;",
+        "-;",
         "O1,Turbo,Off,On;",
         "O2,Dos Rom,Off,On;",
         "O34,Scanlines,Off,25%,50%,75%;",
         "O5,SHRG,Off,On;",
-        "O56,Screen Color,White,Green,Amber;",
+        "O67,Screen Color,White,Green,Amber;",
         "-;",
         "R0,Reset;",
         "V,v",`BUILD_DATE
@@ -208,7 +210,8 @@ assign reset = (RESET | status[0] | buttons[1] | rom_download  );
 wire ps2_kbd_clk;
 wire ps2_kbd_data;
 
-  assign clk_sys  = clk_25;
+  //assign clk_sys  = clk_25;
+  assign clk_sys  = clk_10;
   
 wire       key_pressed = ps2_key[9];
 wire [8:0] key_code    = ps2_key[8:0];
@@ -232,14 +235,19 @@ LASER310_TOP LASER310_TOP(
         .VGA_BLUE(b),
         .VGA_HS(hs),
         .VGA_VS(vs),
-		  .h_blank(hblank),
-		  .v_blank(vblank),
+        .h_blank(hblank),
+        .v_blank(vblank),
         .AUD_ADCDAT(audio),
 //      .VIDEO_MODE(1'b0),
         .audio_s(audio_s),
         .key_strobe     (key_strobe     ),
         .key_pressed    (key_pressed    ),
         .key_code       (key_code       ),
+
+	.dn_data(ioctl_data),
+	.dn_addr(ioctl_addr[13:0]),
+	.dn_wr(ioctl_wr),
+	.led(LED),
         .SWITCH({"00000",~status[5],~status[2],~status[1]}),
         .UART_RXD(),
         .UART_TXD()

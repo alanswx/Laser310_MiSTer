@@ -8,8 +8,8 @@
 `define VRAM_2K
 //`define VRAM_8K
 `define SHRG
-//`ifdef CASS_EMU
-//`ifdef CASS_EMU_16K
+`define CASS_EMU
+`define CASS_EMU_16K
 //`ifdef CASS_EMU_8K
 //`ifdef CASS_EMU_4K
 //`ifdef CASS_EMU_2K
@@ -48,7 +48,12 @@ input				key_pressed,
 input		[7:0]	key_code,
 input		[9:0]	SWITCH,
 input				UART_RXD,
-output			UART_TXD
+output			UART_TXD,
+input [7:0] dn_data,
+input [13:0] dn_addr,
+input  dn_wr,
+output led
+
 ); 
 
 reg		[3:0]		CLK;
@@ -975,6 +980,7 @@ wire	[7:0]	CASS_BUF_Q;
 
 // F9    CASS PLAY
 // F10   CASS STOP
+assign led = KEY_Fxx[8];
 
 EMU_CASS_KEY	EMU_CASS_KEY(
 	KEY_Fxx[8],
@@ -1010,11 +1016,14 @@ EMU_CASS_KEY	EMU_CASS_KEY(
 
 `ifdef CASS_EMU_16K
 
+wire [13:0] cass_addr = dn_wr? dn_addr : CASS_BUF_A[13:0];
+
 cass_ram_16k_altera cass_buf(
-	.address(CASS_BUF_A[13:0]),
+	.address(cass_addr),
 	.clock(CLK10MHZ),
-	.data(CASS_BUF_DI),
-	.wren(CASS_BUF_WR),
+//	.data(CASS_BUF_DI),
+	.data(dn_data),
+	.wren(CASS_BUF_WR || dn_wr),
 	.q(CASS_BUF_Q)
 );
 
