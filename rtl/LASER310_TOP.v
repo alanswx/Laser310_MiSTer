@@ -49,8 +49,9 @@ input		[7:0]	key_code,
 input		[9:0]	SWITCH,
 input				UART_RXD,
 output			UART_TXD,
+input [7:0] dn_index,
 input [7:0] dn_data,
-input [13:0] dn_addr,
+input [15:0] dn_addr,
 input  dn_wr,
 output led
 
@@ -355,10 +356,11 @@ tv80s Z80CPU (
 	.rfsh_n(CPU_RFSH_N),
 	.halt_n(CPU_HALT_N),
 	.busak_n(CPU_BUSAK_N),
-	.A(CPU_A),
-	.dout(CPU_DO),
+	.A(ACPU_A),
+	.dout(ACPU_DO),
 	.reset_n(CPU_RESET_N),
-	.clk(CPU_CLK),
+//	.clk(CPU_CLK),
+	.clk(GCLK),
 	.wait_n(1'b1),
 	.int_n(CPU_INT_N),
 	.nmi_n(1'b1),
@@ -366,6 +368,35 @@ tv80s Z80CPU (
 	.di(CPU_DI)
 );
 
+wire[15:0]	ACPU_A;
+wire [7:0]	ACPU_DO;
+
+/*
+assign CPU_A =  ACPU_A;
+assign CPU_DO = ACPU_DO;
+wire GCLK =  CPU_CLK ;
+*/
+
+assign CPU_A = vz_wr ? vz_addr : ACPU_A;
+assign CPU_DO = vz_wr ? vz_data : ACPU_DO;
+wire GCLK = vz_wr ? 1'b0  : CPU_CLK ;
+wire [7:0] vz_data;
+wire [15:0] vz_addr;
+wire vz_wr;
+
+
+vz_loader vz_loader(
+        .I_CLK(CPU_CLK),
+        .I_RST(~CPU_RESET_N),
+
+        .ioctl_wr(dn_wr),
+        .ioctl_addr(dn_addr),
+        .ioctl_data(dn_data),
+
+        .vz_addr(vz_addr),
+        .vz_data(vz_data),
+        .vz_wr(vz_wr)
+);
 
 // 0000 -- 3FFF ROM 16KB
 // 4000 -- 5FFF DOS
@@ -601,6 +632,11 @@ MC6847_VGA MC6847_VGA(
 	.VGA_OUT_GREEN(VGA_GREEN),
 	.VGA_OUT_BLUE(VGA_BLUE)
 );
+
+/*****************************************************************************
+*  VZ Loader
+******************************************************************************/
+
 
 
 // keyboard

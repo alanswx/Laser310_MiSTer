@@ -15,6 +15,7 @@ set_global_assignment -name VERILOG_FILE rtl/tv80/tv80_reg.v
 set_global_assignment -name VERILOG_FILE rtl/tv80/tv80_mcode.v
 set_global_assignment -name VERILOG_FILE rtl/tv80/tv80_core.v
 set_global_assignment -name VERILOG_FILE rtl/tv80/tv80_alu.v
+set_global_assignment -name VERILOG_FILE rtl/fdc.v
 set_global_assignment -name VHDL_FILE rtl/sn76489/sn76489_top.vhd
 set_global_assignment -name VHDL_FILE rtl/sn76489/sn76489_tone.vhd
 set_global_assignment -name VHDL_FILE rtl/sn76489/sn76489_noise.vhd
@@ -27,6 +28,7 @@ set_global_assignment -name VERILOG_FILE rtl/reset_de.v
 set_global_assignment -name VHDL_FILE rtl/dpram.vhd
 set_global_assignment -name TEXT_FILE rtl/tv80/Text1.txt
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/LaserKeyboard.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/vz_loader.sv
 #set_global_assignment -name SYSTEMVERILOG_FILE rtl/LaserCassEmu.sv
 set_global_assignment -name VERILOG_FILE rtl/fdc.v
 set_global_assignment -name IP_TOOL_NAME "RAM: 1-PORT"

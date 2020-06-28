@@ -146,7 +146,7 @@ assign LED_USER  = ioctl_download;
 localparam CONF_STR = {
         "Laser;;",
         "-;",
-        "F1,VZ ,Load VZ Tape;",
+        "F1,VZ ,Load VZ Image;",
         "-;",
         "O1,Turbo,Off,On;",
         "O2,Dos Rom,Off,On;",
@@ -164,7 +164,7 @@ wire [31:0] status;
 wire  [1:0] buttons;
 wire        ioctl_download;
 wire        ioctl_wr;
-wire [13:0] ioctl_addr;
+wire [15:0] ioctl_addr;
 wire  [7:0] ioctl_data;
 wire  [7:0] ioctl_index;
 
@@ -244,8 +244,9 @@ LASER310_TOP LASER310_TOP(
         .key_pressed    (key_pressed    ),
         .key_code       (key_code       ),
 
+	.dn_index(ioctl_index),
 	.dn_data(ioctl_data),
-	.dn_addr(ioctl_addr[13:0]),
+	.dn_addr(ioctl_addr[15:0]),
 	.dn_wr(ioctl_wr),
 	.led(LED),
         .SWITCH({"00000",~status[5],~status[2],~status[1]}),

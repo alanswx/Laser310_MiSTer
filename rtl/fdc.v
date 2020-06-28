@@ -2,9 +2,9 @@
 * Floppy
 ******************************************************************************/
 
-// POLLING after Clock
+// POLLING 在时钟位之后
 
-// vz dsk Parameter
+// vz dsk 参数
 // 154 * 16  * 40 = 98560 = 0x18100
 // 154 * 16 = 2464 = 0x9A0 = 0x4D0 * 2
 `define	FD_MAX_LEN		17'h18100
@@ -79,13 +79,13 @@ output						FDC_WP;
 
 
 reg		[11:0]		FLOPPY_BYTE;
-output	reg		[7:0]		FLOPPY_SECTOR_BYTE;	// Count Sector Bytes
+output	reg		[7:0]		FLOPPY_SECTOR_BYTE;	// 扇区字节计数
 
 reg		[6:0]		CLK_CNT;
 reg		[6:0]		CLK_CNT_W;
 
 reg		[18:0]		SYNC_CNT;
-reg		[7:0]		FLOPPY_SECTOR_DELAY;	// Delay on Sector End
+reg		[7:0]		FLOPPY_SECTOR_DELAY;	// 用于模拟扇区结束时的延时
 
 
 reg					FD_REC1;
