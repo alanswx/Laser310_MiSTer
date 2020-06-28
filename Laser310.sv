@@ -229,7 +229,7 @@ LASER310_TOP LASER310_TOP(
         .CLK50MHZ(clk_50),
         .CLK25MHZ(clk_25),
         .CLK10MHZ(clk_10),
-        .RESET(~(status[0] | status[6] | buttons[1])),
+        .RESET(~reset),
         .VGA_RED(r),
         .VGA_GREEN(g),
         .VGA_BLUE(b),
@@ -249,7 +249,7 @@ LASER310_TOP LASER310_TOP(
 	.dn_addr(ioctl_addr[15:0]),
 	.dn_wr(ioctl_wr),
 	.led(LED),
-        .SWITCH({"00000",~status[5],~status[2],~status[1]}),
+        .SWITCH({"00000",~status[5],status[2],~status[1]}),
         .UART_RXD(),
         .UART_TXD()
         );

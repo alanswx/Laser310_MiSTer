@@ -1016,7 +1016,8 @@ wire	[7:0]	CASS_BUF_Q;
 
 // F9    CASS PLAY
 // F10   CASS STOP
-assign led = KEY_Fxx[8];
+//assign led = KEY_Fxx[8];
+assign led = vz_wr;
 
 EMU_CASS_KEY	EMU_CASS_KEY(
 	KEY_Fxx[8],
