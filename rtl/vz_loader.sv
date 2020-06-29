@@ -16,8 +16,8 @@ module vz_loader
 	input  [7:0] ioctl_data,
 
 	output reg [15:0] vz_addr,
-	output reg [7:0] vz_data,
-	output  reg vz_wr,
+	output reg [7:0]  vz_data,
+	output reg        vz_wr,
 	output reg led
 
 );
@@ -30,7 +30,6 @@ reg [7:0] mode;
 
 reg [15:0] cur_addr;
 reg [15:0] start;
-reg [15:0] end_addr;
 
 reg [31:0] count;
 
@@ -66,7 +65,7 @@ always@(posedge I_CLK) begin
 				    end
 					// 21 - type - 
 					// 	VZ_BASIC = 0xf0;
-	                                //      VZ_MCODE = 0xf1;
+	            //      VZ_MCODE = 0xf1;
 					// 22, 23 start
 				'd22: 
 					begin
@@ -103,13 +102,12 @@ always@(posedge I_CLK) begin
             $display("in finish count %x %d\n",count,count);
 		case (mode)
 			// 	VZ_BASIC = 0xf0;
-	                //      VZ_MCODE = 0xf1;
+	      //      VZ_MCODE = 0xf1;
 			'hf0:
 			begin
 				case (count)
 					'd8:
 					begin
-
 						vz_addr<='h78a5;
 						vz_data<=start[15:8];
 					end
@@ -156,7 +154,6 @@ always@(posedge I_CLK) begin
 				case (count)
 						'd2:
 						begin
-
 							vz_addr<='h788f;
 							vz_data<=start[15:8];
 						end
@@ -168,6 +165,7 @@ always@(posedge I_CLK) begin
 						end
 					endcase
 		 		end
+				
 		 	endcase
 			count<=count-1;
 			/*
@@ -184,9 +182,9 @@ always@(posedge I_CLK) begin
 			inbody     <= 0;
 			infinish   <= 0;
 			vz_wr      <= 0;
-			led<=0;
+			led        <= 0;
 
-            //$display("in the done spot %x %d\n",vz_wr,vz_wr);
+         //$display("in the done spot %x %d\n",vz_wr,vz_wr);
 		end
 	
 end

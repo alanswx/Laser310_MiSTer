@@ -387,7 +387,9 @@ wire vz_wr;
 
 
 vz_loader vz_loader(
-        .I_CLK(CPU_CLK),
+        //.I_CLK(CPU_CLK),
+        .I_CLK(CLK10MHZ),
+	
         .I_RST(~CPU_RESET_N),
 
         .ioctl_wr(dn_wr),
