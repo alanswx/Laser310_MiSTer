@@ -17,7 +17,8 @@ module vz_loader
 
 	output reg [15:0] vz_addr,
 	output reg [7:0] vz_data,
-	output  reg vz_wr
+	output  reg vz_wr,
+	output reg led
 
 );
 
@@ -48,14 +49,15 @@ always@(posedge I_CLK) begin
 	begin
 		if (inheader) 
 		begin
+			led<=1;
 			case (ioctl_addr[5:0])
 				// 24 byte header
-				00: ; // V
-				01: ; // Z
-				02: ; // 
-				03: ; // 
+				'd00: ; // V
+				'd01: ; // Z
+				'd02: ; // 
+				'd03: ; // 
 				// 4-20 16 bytes - program name
-				21: begin
+				'd21: begin
 					mode <= ioctl_data;
 					if (ioctl_data == 'hF0) 
 						count<= 'd8;
@@ -66,22 +68,22 @@ always@(posedge I_CLK) begin
 					// 	VZ_BASIC = 0xf0;
 	                                //      VZ_MCODE = 0xf1;
 					// 22, 23 start
-					22: begin
+				'd22: 
+					begin
 						start[7:0] <= ioctl_data; 
-                                               $display("start %x %x\n",start,ioctl_data);
+                  $display("start %x %x\n",start,ioctl_data);
 					end
-					23: begin
-
+				'd23: 
+					begin
 						start[15:8] <= ioctl_data;
-                                               $display("start %x %x\n",start,ioctl_data);
-                                               $display("mode %x %d\n",mode,mode);
-                                               $display("start %x %d\n",start,start);
+                  $display("start %x %x\n",start,ioctl_data);
+                  $display("mode %x %d\n",mode,mode);
+                  $display("start %x %d\n",start,start);
 						inheader<=0;
 						inbody<=1;
 						infinish<=1;
-				    		cur_addr <= { ioctl_data , start[7:0] };
-					
-					    end
+				    	cur_addr <= { ioctl_data , start[7:0] };
+				    end
 			endcase
 		end
 		else if (inbody) 
@@ -96,15 +98,18 @@ always@(posedge I_CLK) begin
 	end
 	else if (infinish) 
 	    begin
-		
+				led<=0;
+	
             $display("in finish count %x %d\n",count,count);
 		case (mode)
 			// 	VZ_BASIC = 0xf0;
 	                //      VZ_MCODE = 0xf1;
 			'hf0:
+			begin
 				case (count)
 					'd8:
 					begin
+
 						vz_addr<='h78a5;
 						vz_data<=start[15:8];
 					end
@@ -145,11 +150,13 @@ always@(posedge I_CLK) begin
 						infinish<=0;
 					end
 				endcase
+				end
 			 'hf1:
 		 		begin
-					case (count)
+				case (count)
 						'd2:
 						begin
+
 							vz_addr<='h788f;
 							vz_data<=start[15:8];
 						end
@@ -163,17 +170,22 @@ always@(posedge I_CLK) begin
 		 		end
 		 	endcase
 			count<=count-1;
+			/*
 			if (!count) 
 			begin
 				vz_wr<=0;
 				infinish   <= 0;
 			end
-		end else
+			*/
+		end 
+	else
 		begin
 			inheader   <= 1;
 			inbody     <= 0;
 			infinish   <= 0;
 			vz_wr      <= 0;
+			led<=0;
+
             //$display("in the done spot %x %d\n",vz_wr,vz_wr);
 		end
 	

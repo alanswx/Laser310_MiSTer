@@ -138,7 +138,7 @@ assign AUDIO_MIX = 0;
 
 assign LED_DISK  = LED;						/* later add disk motor on/off */
 assign LED_POWER = 0;
-assign LED_USER  = ioctl_download;
+assign LED_USER  = LED2/*ioctl_download*/;
 
 
 
@@ -159,6 +159,7 @@ localparam CONF_STR = {
 };
 
 wire LED;
+wire LED2;
 
 wire [31:0] status;
 wire  [1:0] buttons;
@@ -249,6 +250,7 @@ LASER310_TOP LASER310_TOP(
 	.dn_addr(ioctl_addr[15:0]),
 	.dn_wr(ioctl_wr),
 	.led(LED),
+	.led2(LED2),
         .SWITCH({"00000",~status[5],status[2],~status[1]}),
         .UART_RXD(),
         .UART_TXD()

@@ -53,7 +53,8 @@ input [7:0] dn_index,
 input [7:0] dn_data,
 input [15:0] dn_addr,
 input  dn_wr,
-output led
+output led,
+output led2
 
 ); 
 
@@ -395,7 +396,8 @@ vz_loader vz_loader(
 
         .vz_addr(vz_addr),
         .vz_data(vz_data),
-        .vz_wr(vz_wr)
+        .vz_wr(vz_wr),
+		  .led(led2)
 );
 
 // 0000 -- 3FFF ROM 16KB
