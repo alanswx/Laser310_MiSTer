@@ -9,7 +9,10 @@
 `define SHRG
 `define CASS_EMU
 //`define CASS_EMU_16K
+`ifndef VERILATOR
 `define SN76489
+`endif
+
 //`ifdef CASS_EMU_8K
 //`ifdef CASS_EMU_4K
 //`ifdef CASS_EMU_2K
@@ -494,8 +497,11 @@ assign CPU_DI = 	ADDRESS_ROM				? SYS_ROM_DATA			:
 
 `ifdef BASE_SYS_ROM
 sprom #(
+`ifndef VERILATOR
 	.init_file("./roms/sysrom.mif"),
-	//.init_file("./roms/sysrom.hex"),
+`else
+	.init_file("./roms/sysrom.hex"),
+`endif
 	.widthad_a(14),
 	.width_a(8))
 sys_rom(
@@ -507,8 +513,11 @@ sys_rom(
 
 `ifdef BASE_DOS_ROM
 sprom #(
-	//.init_file("./roms/dosrom.hex"),
+`ifndef VERILATOR
 	.init_file("./roms/dosrom.mif"),
+`else
+	.init_file("./roms/dosrom.hex"),
+`endif
 	.widthad_a(13),
 	.width_a(8))
 DOS_ROM(
@@ -520,8 +529,11 @@ DOS_ROM(
 
 `ifdef BOOT_ROM_6000
 sprom #(
-	//.init_file("./roms/boot_rom_6000.hex"),
+`ifndef VERILATOR
 	.init_file("./roms/boot_rom_6000.mif"),
+`else
+	.init_file("./roms/boot_rom_6000.hex"),
+`endif
 	.widthad_a(9),
 	.width_a(8))
 BOOT_ROM(

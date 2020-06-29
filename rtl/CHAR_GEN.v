@@ -35,8 +35,11 @@ wire	[7:0]	rom_data;
 //);
 
 sprom #(
+`ifndef VERILATOR
 	.init_file("./roms/charrom_4k.mif"),
-	//.init_file("./roms/charrom_4k.hex"),
+`else
+	.init_file("./roms/charrom_4k.hex"),
+`endif
 	.widthad_a(12),
 	.width_a(8))
 CHAR_GEN_ROM(
