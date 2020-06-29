@@ -6,10 +6,11 @@
 `define USE_VGA
 //`define USE_CGA
 
-module top(VGA_R,VGA_B,VGA_G,VGA_HS,VGA_VS,reset,clk_sys,clk_vid,ioctl_download,ioctl_addr,ioctl_dout,ioctl_index,ioctl_wait,ioctl_wr,start);
+module top(VGA_R,VGA_B,VGA_G,VGA_HS,VGA_VS,reset,clk_50,clk_25,clk_10,ioctl_download,ioctl_addr,ioctl_dout,ioctl_index,ioctl_wait,ioctl_wr,start);
 
-   input clk_sys/*verilator public_flat*/;
-   input clk_vid/*verilator public_flat*/;
+   input clk_50/*verilator public_flat*/;
+   input clk_25/*verilator public_flat*/;
+   input clk_10/*verilator public_flat*/;
    input reset/*verilator public_flat*/;
 
    output [7:0] VGA_R/*verilator public_flat*/;
@@ -32,18 +33,6 @@ module top(VGA_R,VGA_B,VGA_G,VGA_HS,VGA_VS,reset,clk_sys,clk_vid,ioctl_download,
    
    //-------------------------------------------------------------------
 
-wire cart_download = ioctl_download & (ioctl_index != 8'd0);
-wire bios_download = ioctl_download & (ioctl_index == 8'd0);
-
-
-reg old_cart_download;
-reg initial_pause = 1'b1;
-
-always @(posedge clk_sys) begin
-	old_cart_download <= cart_download;
-	if (old_cart_download & ~cart_download) initial_pause <= 1'b0;
-end
-
 ////////////////////////////  HPS I/O  //////////////////////////////////
 
 wire  [1:0] buttons;
@@ -64,9 +53,9 @@ wire [7:0] ld;
 
 
 LASER310_TOP LASER310_TOP(
-        .CLK50MHZ(clk_sys),
-        .CLK25MHZ(clk_sys),
-        .CLK10MHZ(clk_vid),
+        .CLK50MHZ(clk_50),
+        .CLK25MHZ(clk_25),
+        .CLK10MHZ(clk_10),
         .RESET(~reset),
         .VGA_RED(VGA_R),
         .VGA_GREEN(VGA_G),

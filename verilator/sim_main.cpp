@@ -618,7 +618,8 @@ static void ShowExampleAppConsole(bool* p_open)
 
 
 int verilate() {
-static int clkdiv=3;
+static int clkdiv_2=2;
+static int clkdiv_5=5;
 
 	if (!Verilated::gotFinish()) {
 		//while ( top->FL_ADDR < 0x0100 ) {		// Only run for a short time.
@@ -630,19 +631,27 @@ static int clkdiv=3;
 		}
 		if ((main_time & 1) == 0) {
 //			top->clk_sys = 0;       // Toggle clock
-			if (!clkdiv) {
+			if (!clkdiv_2) {
+			top->clk_25= 0;				
 			}
-				top->clk_sys=0;
-			top->clk_vid = 0;				
+			if (!clkdiv_5) {
+			top->clk_10= 0;				
+			}
+			top->clk_50=0;
 		}
 		if ((main_time & 1) == 1) {
 //			top->clk_sys = 1;
-			if (!clkdiv) {
-				clkdiv=3;
+			if (!clkdiv_2) {
+				clkdiv_2=2;
+				top->clk_25= 1;
 			}
-			clkdiv--;
-			top->clk_sys=1;
-			top->clk_vid = 1;
+			if (!clkdiv_5) {
+				clkdiv_5=5;
+				top->clk_10= 1;
+			}
+			clkdiv_2--;
+			clkdiv_5--;
+			top->clk_50= 1;
 
 #if 0
 			if (top->bus_system_read && top->bus_mem_addr>>2 < bios_size)  {
@@ -965,16 +974,16 @@ static int clkdiv=3;
 		}
 
 
-	if (top->clk_sys ) 
+	if (top->clk_50) 
 		ioctl_download_before_eval();
 	else if (ioctl_file)
-		printf("skipping download this cycle %d\n",top->clk_sys);
+		printf("skipping download this cycle %d\n",top->clk_50);
 
 
 
 		top->eval();            // Evaluate model!
 
-	if (top->clk_sys ) 
+	if (top->clk_50) 
 		ioctl_download_after_eval();
 
 
