@@ -10,6 +10,8 @@ module vz_loader
 (
 	input         I_CLK,
 	input         I_RST,
+	
+	input        ioctl_download,
 
 	input        ioctl_wr,
 	input [15:0] ioctl_addr,
@@ -44,9 +46,9 @@ always@(posedge I_CLK) begin
 		infinish   <= 0;
 		vz_wr      <= 0;
 	end
-	else if (ioctl_wr ) 
+	else if (ioctl_download ) 
 	begin
-		if (inheader) 
+		if (inheader & ioctl_wr) 
 		begin
 			led<=1;
 			case (ioctl_addr[5:0])
@@ -85,7 +87,7 @@ always@(posedge I_CLK) begin
 				    end
 			endcase
 		end
-		else if (inbody) 
+		else if (inbody & ioctl_wr) 
 		begin
 			$display("in body curaddr %x\n",cur_addr);
 			$display("in body ioctladdr %x\n",ioctl_addr);

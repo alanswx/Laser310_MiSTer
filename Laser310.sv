@@ -250,6 +250,7 @@ LASER310_TOP LASER310_TOP(
 	.dn_data(ioctl_data),
 	.dn_addr(ioctl_addr[15:0]),
 	.dn_wr(ioctl_wr),
+	.dn_download(ioctl_download),
 	.led(LED),
 	.led2(LED2),
         .SWITCH({"00000",~status[5],status[2],~status[1]}),

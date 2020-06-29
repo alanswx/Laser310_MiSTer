@@ -56,6 +56,7 @@ input [7:0] dn_index,
 input [7:0] dn_data,
 input [15:0] dn_addr,
 input  dn_wr,
+input dn_download,
 output led,
 output led2
 
@@ -398,7 +399,8 @@ vz_loader vz_loader(
         .ioctl_wr(dn_wr),
         .ioctl_addr(dn_addr),
         .ioctl_data(dn_data),
-
+		  .ioctl_download(dn_download),
+		  
         .vz_addr(vz_addr),
         .vz_data(vz_data),
         .vz_wr(vz_wr),
