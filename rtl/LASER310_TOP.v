@@ -1,4 +1,3 @@
-`timescale 1 ns / 1 ns
 `define BASE_SYS_ROM
 `define BASE_DOS_ROM
 `define BOOT_ROM_6000
@@ -9,7 +8,8 @@
 //`define VRAM_8K
 `define SHRG
 `define CASS_EMU
-`define CASS_EMU_16K
+//`define CASS_EMU_16K
+`define SN76489
 //`ifdef CASS_EMU_8K
 //`ifdef CASS_EMU_4K
 //`ifdef CASS_EMU_2K
@@ -388,7 +388,7 @@ wire vz_wr;
 
 vz_loader vz_loader(
         //.I_CLK(CPU_CLK),
-        .I_CLK(CLK10MHZ),
+        .I_CLK(CLK50MHZ),
 	
         .I_RST(~CPU_RESET_N),
 
@@ -495,6 +495,7 @@ assign CPU_DI = 	ADDRESS_ROM				? SYS_ROM_DATA			:
 `ifdef BASE_SYS_ROM
 sprom #(
 	.init_file("./roms/sysrom.mif"),
+	//.init_file("./roms/sysrom.hex"),
 	.widthad_a(14),
 	.width_a(8))
 sys_rom(
@@ -506,6 +507,7 @@ sys_rom(
 
 `ifdef BASE_DOS_ROM
 sprom #(
+	//.init_file("./roms/dosrom.hex"),
 	.init_file("./roms/dosrom.mif"),
 	.widthad_a(13),
 	.width_a(8))
@@ -518,6 +520,7 @@ DOS_ROM(
 
 `ifdef BOOT_ROM_6000
 sprom #(
+	//.init_file("./roms/boot_rom_6000.hex"),
 	.init_file("./roms/boot_rom_6000.mif"),
 	.widthad_a(9),
 	.width_a(8))
@@ -1111,6 +1114,7 @@ cass_ram_2k_altera cass_buf(
 
 `endif
 
+`ifdef SN76489
 sn76489_top #(
 	.clock_div_16_g(1))
 sn76489(
@@ -1123,6 +1127,7 @@ sn76489(
    .d_i(CPU_DO),
    .aout_o(audio_s)
   );
+ `endif
 
 assign	CASS_OUT = EMU_CASS_EN ? EMU_CASS_DAT : {LATCHED_IO_DATA_WR[2], 1'b0};
 

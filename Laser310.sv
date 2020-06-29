@@ -212,8 +212,9 @@ wire ps2_kbd_clk;
 wire ps2_kbd_data;
 
   //assign clk_sys  = clk_25;
-  assign clk_sys  = clk_10;
-  
+  //assign clk_sys  = clk_10; // ajs - working?
+  assign clk_sys  = clk_50;
+
 wire       key_pressed = ps2_key[9];
 wire [8:0] key_code    = ps2_key[8:0];
 reg key_strobe;
@@ -240,7 +241,7 @@ LASER310_TOP LASER310_TOP(
         .v_blank(vblank),
         .AUD_ADCDAT(audio),
 //      .VIDEO_MODE(1'b0),
-        .audio_s(audio_s),
+        .audio_s(audiomix),
         .key_strobe     (key_strobe     ),
         .key_pressed    (key_pressed    ),
         .key_code       (key_code       ),
@@ -301,7 +302,7 @@ wire hs,vs,hblank,vblank;
 
 //assign VGA_VS=vs;
 //assign VGA_HS=hs;
-wire [8:0]audiomix;
+wire [7:0]audiomix;
 
 wire [17:0] RGB;
 /*
@@ -313,7 +314,7 @@ assign VGA_B={RGB[17:12],2'b00};
 assign VGA_DE=(vblank & hblank);
 
 */
-assign AUDIO_L={audiomix,7'b0000000};
+assign AUDIO_L={audiomix,8'b0000000};
 assign AUDIO_R=AUDIO_L;
 
 

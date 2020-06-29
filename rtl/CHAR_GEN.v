@@ -36,6 +36,7 @@ wire	[7:0]	rom_data;
 
 sprom #(
 	.init_file("./roms/charrom_4k.mif"),
+	//.init_file("./roms/charrom_4k.hex"),
 	.widthad_a(12),
 	.width_a(8))
 CHAR_GEN_ROM(
@@ -49,14 +50,14 @@ CHAR_GEN_ROM(
 always @ (posedge pixel_clock or posedge reset) begin
 	if (reset)
  		begin
-			pixel_on = 1'b0;
-			latched_data  = 8'h00;
+			pixel_on <= 1'b0;
+			latched_data  <= 8'h00;
 		end
 
 	else begin
 		case(subchar_pixel)
 			4'b0101:
-				latched_data [7:0] = {rom_data[0],rom_data[1],rom_data[2],rom_data[3],rom_data[4],rom_data[5],rom_data[6],rom_data[7]};
+				latched_data [7:0] <= {rom_data[0],rom_data[1],rom_data[2],rom_data[3],rom_data[4],rom_data[5],rom_data[6],rom_data[7]};
 			default:
 			if(subchar_pixel[0]==1'b0)
 				{pixel_on,latched_data [7:1]} <= latched_data [7:0];
