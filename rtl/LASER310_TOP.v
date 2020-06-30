@@ -355,8 +355,8 @@ assign CPU_BUSRQ_N = ~CPU_BUSRQ;
 
 tv80s Z80CPU (
 	.m1_n(CPU_M1_N),
-	.mreq_n(CPU_MREQ_N),
-	.iorq_n(CPU_IORQ_N),
+	.mreq_n(ACPU_MREQ_N),
+	.iorq_n(ACPU_IORQ_N),
 	.rd_n(CPU_RD_N),
 	.wr_n(ACPU_WR_N),
 	.rfsh_n(CPU_RFSH_N),
@@ -377,6 +377,8 @@ tv80s Z80CPU (
 wire[15:0]	ACPU_A;
 wire [7:0]	ACPU_DO;
 wire A_CPU_WR_N;
+wire ACPU_IORQ_N;
+wire ACPU_MREQ_N;
 
 /*
 assign CPU_A =  ACPU_A;
@@ -389,6 +391,8 @@ assign CPU_DO = vz_wr ? vz_data : ACPU_DO;
 wire GCLK = vz_wr ? 1'b0  : CPU_CLK ;
 assign CPU_WR_N = vz_wr ? 0 : ACPU_WR_N;
 assign MEM_OP_WR = vz_wr ? 1 : AMEM_OP_WR;
+assign CPU_IORQ_N = vz_wr ? 1: ACPU_IORQ_N;
+assign CPU_MREQ_N = vz_wr ? 0 : ACPU_MREQ_N;
 wire [7:0] vz_data;
 wire [15:0] vz_addr;
 wire vz_wr;
