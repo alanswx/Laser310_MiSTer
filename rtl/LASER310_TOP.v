@@ -365,6 +365,7 @@ assign CPU_RESET_N = ~CPU_RESET;
 assign CPU_INT_N = VIDEO_MODE ? ~CPU_INT : ~VGA_VS;
 assign CPU_BUSRQ_N = ~CPU_BUSRQ;
 
+/*
 tv80s Z80CPU (
 	.m1_n(CPU_M1_N),
 	.mreq_n(ACPU_MREQ_N),
@@ -385,6 +386,45 @@ tv80s Z80CPU (
 	.busrq_n(CPU_BUSRQ_N),
 	.di(CPU_DI)
 );
+*/
+t80pa Z80CPU (
+	.m1_n(CPU_M1_N),
+	.mreq_n(ACPU_MREQ_N),
+	.iorq_n(ACPU_IORQ_N),
+	.rd_n(CPU_RD_N),
+	.wr_n(ACPU_WR_N),
+	.rfsh_n(CPU_RFSH_N),
+	.halt_n(CPU_HALT_N),
+	.busak_n(CPU_BUSAK_N),
+	.A(ACPU_A),
+	.do(ACPU_DO),
+	.reset_n(CPU_RESET_N),
+//	.clk(CPU_CLK),
+	.clk(GCLK),
+	.wait_n(1'b1),
+	.int_n(CPU_INT_N),
+	.nmi_n(1'b1),
+	.busrq_n(CPU_BUSRQ_N),
+	.di(CPU_DI),
+
+	.DIR(DIR),
+	.DIRSet(DIRSet)
+
+);
+
+z80_regset #(16'hB7BB) regset (
+	.execute_addr(execute_addr),
+	.execute_enable(execute_enable),
+	.dir_out(DIR),
+	.dir_set(DIRSet)
+);
+
+wire [211:0] dir_out;       // Z80 Register set as defined in T80pa / T80
+wire dir_set;                // Signal to set registers
+wire [15:0] execute_addr;     // Start address for program start
+wire execute_enable;   	    // Jump to start address (out_execute_addr) - Not implemented
+
+
 
 wire[15:0]	ACPU_A;
 wire [7:0]	ACPU_DO;
@@ -420,12 +460,15 @@ vz_loader vz_loader(
         .ioctl_wr(dn_wr),
         .ioctl_addr(dn_addr),
         .ioctl_data(dn_data),
-		  .ioctl_download(dn_download),
+        .ioctl_download(dn_download),
 		  
         .vz_addr(vz_addr),
         .vz_data(vz_data),
         .vz_wr(vz_wr),
-		  .led(led2)
+        .led(led2),
+
+	.execute_enable(execute_enable),
+	.execute_addr(execute_addr)
 );
 
 // 0000 -- 3FFF ROM 16KB

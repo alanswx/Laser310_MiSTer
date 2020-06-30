@@ -20,7 +20,10 @@ module vz_loader
 	output reg [15:0] vz_addr,
 	output reg [7:0]  vz_data,
 	output reg        vz_wr,
-	output reg led
+	output reg led,
+	output reg [15:0] execute_addr,     // Start address for program start
+        output execute_enable        // Jump to start address (out_execute_addr) 
+
 
 );
 
@@ -45,6 +48,7 @@ always@(posedge I_CLK) begin
 		inbody     <= 0;
 		infinish   <= 0;
 		vz_wr      <= 0;
+                execute_enable<=1'b0;
 	end
 	else if (ioctl_download ) 
 	begin
@@ -158,12 +162,18 @@ always@(posedge I_CLK) begin
 						begin
 							vz_addr<='h788f;
 							vz_data<=start[15:8];
+							execute_addr<= start; 
 						end
 						'd1:
 						begin
 							vz_addr<='h788e;
 							vz_data<=start[7:0];
+						end
+						'd0:
+						begin
 							infinish<=0;
+							execute_enable<=1'b1;
+							vz_wr <=0;
 						end
 					endcase
 		 		end
@@ -185,6 +195,7 @@ always@(posedge I_CLK) begin
 			infinish   <= 0;
 			vz_wr      <= 0;
 			led        <= 0;
+                        execute_enable<=1'b0;
 
          //$display("in the done spot %x %d\n",vz_wr,vz_wr);
 		end
