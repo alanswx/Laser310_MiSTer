@@ -99,7 +99,7 @@ always@(posedge I_CLK) begin
 	end
 	else if (infinish) 
 	    begin
-				led<=0;
+				
 	
             $display("in finish count %x %d\n",count,count);
 		case (mode)

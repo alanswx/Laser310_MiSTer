@@ -64,7 +64,8 @@ output led2
 
 reg		[3:0]		CLK;
 
-reg					MEM_OP_WR;
+wire					MEM_OP_WR;
+reg               AMEM_OP_WR;
 //reg					MEM_RD;
 (*keep*)reg				GPIO_CPU_CLK;
 // Processor
@@ -260,7 +261,7 @@ always @(posedge CLK50MHZ or negedge RESET_N)
 `endif
 
 
-		MEM_OP_WR				<=	1'b0;
+		AMEM_OP_WR				<=	1'b0;
 
 		LATCHED_KEY_DATA		<=	8'b0;
 		LATCHED_IO_DATA_WR		<=	8'b0;
@@ -275,7 +276,7 @@ always @(posedge CLK50MHZ or negedge RESET_N)
 				// 同步内存，等待读写信号建立
 				CPU_CLK				<=	1'b1;
 				GPIO_CPU_CLK		<=	1'b1;
-				MEM_OP_WR			<=	1'b1;
+				AMEM_OP_WR			<=	1'b1;
 				//EMU_CASS_CLK <= ~EMU_CASS_CLK;
 				CLK					<=	4'd1;
 			end
@@ -284,7 +285,7 @@ always @(posedge CLK50MHZ or negedge RESET_N)
 			begin
 				// 同步内存，锁存读写信号和地址
 				CPU_CLK				<=	1'b0;
-				MEM_OP_WR			<=	1'b0;
+				AMEM_OP_WR			<=	1'b0;
 				LATCHED_KEY_DATA	<=	KEY_DATA;
 				if({CPU_MREQ,CPU_RD,CPU_WR,ADDRESS_IO}==4'b1011)
 					LATCHED_IO_DATA_WR	<=	CPU_DO;
@@ -306,7 +307,7 @@ always @(posedge CLK50MHZ or negedge RESET_N)
 				CPU_CLK				<=	1'b0;
 				GPIO_CPU_CLK		<=	~TURBO_SPEED;
 
-				MEM_OP_WR			<=	1'b0;
+				AMEM_OP_WR			<=	1'b0;
 				CLK					<=	4'd3;
 			end
 		4'd3:
@@ -320,19 +321,19 @@ always @(posedge CLK50MHZ or negedge RESET_N)
 			begin
 				CPU_CLK				<=	1'b0;
 				GPIO_CPU_CLK		<=	1'b0;
-				MEM_OP_WR			<=	1'b0;
+				AMEM_OP_WR			<=	1'b0;
 				CLK					<=	4'd8;
 			end
 		4'd13:// 正常速度
 			begin
 				CPU_CLK				<=	1'b0;
-				MEM_OP_WR			<=	1'b0;
+				AMEM_OP_WR			<=	1'b0;
 				CLK					<=	4'd0;
 			end
 		default:
 			begin
 				CPU_CLK				<=	1'b0;
-				MEM_OP_WR			<=	1'b0;
+				AMEM_OP_WR			<=	1'b0;
 				CLK					<=	CLK + 1'b1;
 			end
 		endcase
@@ -357,7 +358,7 @@ tv80s Z80CPU (
 	.mreq_n(CPU_MREQ_N),
 	.iorq_n(CPU_IORQ_N),
 	.rd_n(CPU_RD_N),
-	.wr_n(CPU_WR_N),
+	.wr_n(ACPU_WR_N),
 	.rfsh_n(CPU_RFSH_N),
 	.halt_n(CPU_HALT_N),
 	.busak_n(CPU_BUSAK_N),
@@ -375,6 +376,7 @@ tv80s Z80CPU (
 
 wire[15:0]	ACPU_A;
 wire [7:0]	ACPU_DO;
+wire A_CPU_WR_N;
 
 /*
 assign CPU_A =  ACPU_A;
@@ -385,6 +387,8 @@ wire GCLK =  CPU_CLK ;
 assign CPU_A = vz_wr ? vz_addr : ACPU_A;
 assign CPU_DO = vz_wr ? vz_data : ACPU_DO;
 wire GCLK = vz_wr ? 1'b0  : CPU_CLK ;
+assign CPU_WR_N = vz_wr ? 0 : ACPU_WR_N;
+assign MEM_OP_WR = vz_wr ? 1 : AMEM_OP_WR;
 wire [7:0] vz_data;
 wire [15:0] vz_addr;
 wire vz_wr;
@@ -393,6 +397,7 @@ wire vz_wr;
 vz_loader vz_loader(
         //.I_CLK(CPU_CLK),
         .I_CLK(CLK50MHZ),
+        //.I_CLK(CLK10MHZ),
 	
         .I_RST(~CPU_RESET_N),
 
