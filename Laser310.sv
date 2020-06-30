@@ -212,8 +212,8 @@ wire ps2_kbd_clk;
 wire ps2_kbd_data;
 
   //assign clk_sys  = clk_25;
-  //assign clk_sys  = clk_10; // ajs - working?
-  assign clk_sys  = clk_50;
+  assign clk_sys  = clk_10; // ajs - working?
+  //assign clk_sys  = clk_50;
 
 wire       key_pressed = ps2_key[9];
 wire [8:0] key_code    = ps2_key[8:0];
@@ -253,9 +253,23 @@ LASER310_TOP LASER310_TOP(
 	.dn_download(ioctl_download),
 	.led(LED),
 	.led2(LED2),
-        .SWITCH({"00000",~status[5],status[2],~status[1]}),
+        .SWITCH({"00000",~status[5],status[2],status[1]}),
         .UART_RXD(),
-        .UART_TXD()
+        .UART_TXD(),
+	// joystick
+        .arm_1(joystick_0[5]),
+        .fire_1(joystick_0[4]),
+        .right_1(joystick_0[0]),
+        .left_1(joystick_0[1]),
+        .down_1(joystick_0[2]),
+        .up_1(joystick_0[3]),
+        .arm_2(joystick_1[5]),
+        .fire_2(joystick_1[4]),
+        .right_2(joystick_1[0]),
+        .left_2(joystick_1[1]),
+        .down_2(joystick_1[2]),
+        .up_2(joystick_1[3])
+
         );
 
 wire clk_vid;

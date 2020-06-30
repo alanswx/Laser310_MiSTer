@@ -58,7 +58,19 @@ input [15:0] dn_addr,
 input  dn_wr,
 input dn_download,
 output led,
-output led2
+output led2,
+input arm_1,
+input fire_1,
+input right_1,
+input left_1,
+input down_1,
+input up_1,
+input arm_2,
+input fire_2,
+input right_2,
+input left_2,
+input down_2,
+input up_2
 
 ); 
 
@@ -400,8 +412,8 @@ wire vz_wr;
 
 vz_loader vz_loader(
         //.I_CLK(CPU_CLK),
-        .I_CLK(CLK50MHZ),
-        //.I_CLK(CLK10MHZ),
+        //.I_CLK(CLK50MHZ),
+        .I_CLK(CLK10MHZ),
 	
         .I_RST(~CPU_RESET_N),
 
@@ -493,6 +505,11 @@ assign CPU_DI = 	ADDRESS_ROM				? SYS_ROM_DATA			:
 `ifdef BOOT_ROM_6000
 						ADDRESS_BOOTROM_6000	? BOOT_ROM_6000_DATA	:
 `endif
+// AJS put joystick code in
+ADDRESS_JOYSTICK_1_A ? JOYSTICK_1_DATA_A :
+ADDRESS_JOYSTICK_1_B ? JOYSTICK_1_DATA_B :
+ADDRESS_JOYSTICK_2_A ? JOYSTICK_2_DATA_A :
+ADDRESS_JOYSTICK_2_B ? JOYSTICK_2_DATA_B :
 						ADDRESS_IO				? LATCHED_KEY_DATA		:
 						ADDRESS_VRAM			? VRAM_DATA_OUT			:
 `ifdef BASE_RAM_16K
@@ -502,7 +519,6 @@ assign CPU_DI = 	ADDRESS_ROM				? SYS_ROM_DATA			:
 						ADDRESS_RAM_16K_EXP		? RAM_16K_EXP_DATA_OUT	:
 `endif
 					8'hzz;
-
 
 
 
@@ -1258,4 +1274,15 @@ FDC_IF FDC_U (
 );
 
 
+// PAGE 10 from tech manual
+// alanswx
+wire ADDRESS_IO_J1A =	(CPU_A[7:0] == 8'h2E)?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_1_A = (CPU_IORQ&ADDRESS_IO_J1A);
+wire [7:0] JOYSTICK_1_DATA_A = { 3'b111, ~fire_1, ~right_1, ~left_1,~down_1,~up_1 };
+wire ADDRESS_JOYSTICK_1_B = (CPU_IORQ&(CPU_A[7:0]==8'h2D))?1'b1:1'b0;
+wire [7:0] JOYSTICK_1_DATA_B = { 3'b111, ~arm_1, 4'b1111};
+wire ADDRESS_JOYSTICK_2_A = (CPU_IORQ&(CPU_A[7:0]==8'h2E))?1'b1:1'b0;
+wire [7:0] JOYSTICK_2_DATA_A = { 3'b111, ~fire_2, ~right_2, ~left_2,~down_2,~up_2 };
+wire ADDRESS_JOYSTICK_2_B = (CPU_IORQ&(CPU_A[7:0]==8'h2D))?1'b1:1'b0;
+wire [7:0] JOYSTICK_2_DATA_B = { 3'b111, ~arm_2, 4'b1111};
 endmodule
