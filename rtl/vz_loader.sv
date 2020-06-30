@@ -8,6 +8,7 @@
 
 module vz_loader
 (
+	input         CPU_CLOCK,
 	input         I_CLK,
 	input         I_RST,
 	
@@ -41,6 +42,18 @@ reg [31:0] count;
 // we need to reset when ioctl_download goes high again, for a second program
 // load...
 
+reg oneclock=0;
+always@(posedge CPU_CLOCK) begin
+begin
+        if (oneclock) begin
+                oneclock<= 0;
+        end
+        if (execute_enable) begin
+                oneclock<= 1;
+        end
+end
+
+end
 always@(posedge I_CLK) begin
 
 	if(I_RST)begin
@@ -54,7 +67,6 @@ always@(posedge I_CLK) begin
 	begin
 		if (inheader & ioctl_wr) 
 		begin
-			led<=1;
 			case (ioctl_addr[5:0])
 				// 24 byte header
 				'd00: ; // V
@@ -173,6 +185,7 @@ always@(posedge I_CLK) begin
 						begin
 							infinish<=0;
 							execute_enable<=1'b1;
+							led<=1;
 							vz_wr <=0;
 						end
 					endcase
@@ -194,8 +207,11 @@ always@(posedge I_CLK) begin
 			inbody     <= 0;
 			infinish   <= 0;
 			vz_wr      <= 0;
+                if (oneclock)
+		begin
 			led        <= 0;
-                        execute_enable<=1'b0;
+                	execute_enable<= 0;
+		end
 
          //$display("in the done spot %x %d\n",vz_wr,vz_wr);
 		end

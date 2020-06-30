@@ -419,8 +419,8 @@ z80_regset #(16'hB7BB) regset (
 	.dir_set(DIRSet)
 );
 
-wire [211:0] dir_out;       // Z80 Register set as defined in T80pa / T80
-wire dir_set;                // Signal to set registers
+wire [211:0] DIR;       // Z80 Register set as defined in T80pa / T80
+wire DIRSet;                // Signal to set registers
 wire [15:0] execute_addr;     // Start address for program start
 wire execute_enable;   	    // Jump to start address (out_execute_addr) - Not implemented
 
@@ -428,9 +428,10 @@ wire execute_enable;   	    // Jump to start address (out_execute_addr) - Not im
 
 wire[15:0]	ACPU_A;
 wire [7:0]	ACPU_DO;
-wire A_CPU_WR_N;
+wire ACPU_WR_N;
 wire ACPU_IORQ_N;
 wire ACPU_MREQ_N;
+
 
 /*
 assign CPU_A =  ACPU_A;
