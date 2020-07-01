@@ -112,7 +112,9 @@ module emu
 );
 
 //`define SOUND_DBG
-assign VGA_SL=0;
+wire [2:0] sl = scale ? scale - 1'd1 : 3'd0;
+
+assign VGA_SL=sl[1:0];
 assign VGA_F1=0;
 //assign CE_PIXEL=1;
 
@@ -124,14 +126,10 @@ assign ADC_BUS  = 'Z;
 assign {SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 6'b111111;
 assign SDRAM_DQ = 'Z;
 
-
-//assign VIDEO_ARX = status[9] ? 8'd16 : 8'd4;
-//assign VIDEO_ARY = status[9] ? 8'd9  : 8'd3;
+assign VIDEO_ARX = status[1] ? 8'd16 : 8'd4;
+assign VIDEO_ARY = status[1] ? 8'd9  : 8'd3; 
 
 assign BUTTONS = 0;
-
-assign VIDEO_ARX = 4;
-assign VIDEO_ARY = 3;
 
 assign AUDIO_S = 0;
 assign AUDIO_MIX = 0;
@@ -148,11 +146,12 @@ localparam CONF_STR = {
         "-;",
         "F1,VZ ,Load VZ Image;",
         "-;",
-        "O1,Turbo,Off,On;",
-        "O2,Dos Rom,Off,On;",
-        "O34,Scanlines,Off,25%,50%,75%;",
-        "O5,SHRG,Off,On;",
-        "O67,Screen Color,White,Green,Amber;",
+	"O1,Aspect ratio,4:3,16:9;",
+	"O24,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
+
+        "O5,Turbo,Off,On;",
+        "O6,Dos Rom,Off,On;",
+        "O7,SHRG,Off,On;",
         "-;",
         "R0,Reset;",
         "V,v",`BUILD_DATE
@@ -253,7 +252,7 @@ LASER310_TOP LASER310_TOP(
 	.dn_download(ioctl_download),
 	.led(LED),
 	.led2(LED2),
-        .SWITCH({"00000",~status[5],status[2],status[1]}),
+        .SWITCH({"00000",~status[7],status[6],status[5]}),
         .UART_RXD(),
         .UART_TXD(),
 	// joystick
@@ -280,7 +279,7 @@ assign CLK_VIDEO = clk_50;
 ///////////////////////////////////////////////////
 //wire clk_sys, clk_ram, clk_ram2, clk_pixel, locked;
 //
-wire [2:0] scale = status[3:1];
+wire [2:0] scale = status[4:2];
 wire  [7:0] r,g,b;
 
 //video_mixer #(.LINE_LENGTH(640), .HALF_DEPTH(0), .GAMMA(1)) video_mixer
