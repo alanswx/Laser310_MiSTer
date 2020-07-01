@@ -455,6 +455,7 @@ vz_loader vz_loader(
         //.I_CLK(CPU_CLK),
         //.I_CLK(CLK50MHZ),
         .I_CLK(CLK10MHZ),
+		  .CPU_CLOCK(GCLK),
 	
         .I_RST(~CPU_RESET_N),
 
