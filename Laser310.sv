@@ -170,6 +170,7 @@ localparam CONF_STR = {
         "O7,SHRG,Off,On;",
         "-;",
         "R0,Reset;",
+	"J,Fire 1,Button 2;",
         "V,v",`BUILD_DATE
 };
 

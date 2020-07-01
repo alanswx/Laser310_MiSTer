@@ -1206,14 +1206,15 @@ sn76489(
    .we_n_i(),//todo
    .ready_o(),
    .d_i(CPU_DO),
-   .aout_o(audio_s)
+   .aout_o(AJSaudio_s)
   );
  `endif
 
 assign	CASS_OUT = EMU_CASS_EN ? EMU_CASS_DAT : {LATCHED_IO_DATA_WR[2], 1'b0};
 
 (*keep*)wire trap = (CPU_RD|CPU_WR) && (CPU_A[15:12] == 4'h0);
-
+assign audio_s = { aud,aud,aud,aud,0,0,0,0};
+wire aud = LATCHED_IO_DATA_WR[0]|LATCHED_IO_DATA_WR[5];
 assign AUD_ADCDAT = {LATCHED_IO_DATA_WR[0],LATCHED_IO_DATA_WR[5]};
 
 
@@ -1322,19 +1323,31 @@ FDC_IF FDC_U (
 
 //assign CPU_D_INPORT	=	ADDRESS_IO_FDC			? LATCHED_IO_FDC	:
 //						8'hzz;
+/*
 wire [7:0] CPU_D_INPORT	=	
 	ADDRESS_JOYSTICK_1_A ? JOYSTICK_1_DATA_A :
 	ADDRESS_JOYSTICK_1_B ? JOYSTICK_1_DATA_B :
 	ADDRESS_JOYSTICK_2_A ? JOYSTICK_2_DATA_A :
 	ADDRESS_JOYSTICK_2_B ? JOYSTICK_2_DATA_B :
 						8'hzz;
+*/
+wire [7:0] CPU_D_INPORT    =
+	ADDRESS_JOYSTICK ?  (
+    (ADDRESS_JOYSTICK_1_A ? JOYSTICK_1_DATA_A : 8'hff) &
+    (ADDRESS_JOYSTICK_1_B ? JOYSTICK_1_DATA_B : 8'hff) &
+    (ADDRESS_JOYSTICK_2_A ? JOYSTICK_2_DATA_A : 8'hff) &
+    (ADDRESS_JOYSTICK_2_B ? JOYSTICK_2_DATA_B : 8'hff)) : 
+    	8'hzz;
 
-wire ADDRESS_JOYSTICK_1_A = (CPU_A[7:0] == 8'h2E)?1'b1:1'b0;
+
+wire ADDRESS_JOYSTICK = ( CPU_A[7:4]  == 4'b0010 )?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_1_A = (ADDRESS_JOYSTICK & (CPU_A[0] == 1'b0))?1'b1:1'b0;
 wire [7:0] JOYSTICK_1_DATA_A = { 3'b111, ~fire_1, ~right_1, ~left_1,~down_1,~up_1 };
-wire ADDRESS_JOYSTICK_1_B = (CPU_A[7:0] == 8'h2D)?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_1_B = (ADDRESS_JOYSTICK & (CPU_A[1] == 1'b0))?1'b1:1'b0;
 wire [7:0] JOYSTICK_1_DATA_B = { 3'b111, ~arm_1, 4'b1111};
-wire ADDRESS_JOYSTICK_2_A = (CPU_A[7:0] == 8'h2B)?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_2_A = (ADDRESS_JOYSTICK & (CPU_A[2] == 1'b0))?1'b1:1'b0;
 wire [7:0] JOYSTICK_2_DATA_A = { 3'b111, ~fire_2, ~right_2, ~left_2,~down_2,~up_2 };
-wire ADDRESS_JOYSTICK_2_B = (CPU_A[7:0] == 8'h27)?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_2_B = (ADDRESS_JOYSTICK & (CPU_A[3] == 1'b0))?1'b1:1'b0;
 wire [7:0] JOYSTICK_2_DATA_B = { 3'b111, ~arm_2, 4'b1111};
+
 endmodule
