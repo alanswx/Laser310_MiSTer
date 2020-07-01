@@ -365,7 +365,7 @@ assign CPU_RESET_N = ~CPU_RESET;
 assign CPU_INT_N = VIDEO_MODE ? ~CPU_INT : ~VGA_VS;
 assign CPU_BUSRQ_N = ~CPU_BUSRQ;
 
-/*
+`ifdef VERILATOR
 tv80s Z80CPU (
 	.m1_n(CPU_M1_N),
 	.mreq_n(ACPU_MREQ_N),
@@ -386,7 +386,7 @@ tv80s Z80CPU (
 	.busrq_n(CPU_BUSRQ_N),
 	.di(CPU_DI)
 );
-*/
+`else
 t80pa Z80CPU (
 	.m1_n(CPU_M1_N),
 	.mreq_n(ACPU_MREQ_N),
@@ -411,6 +411,7 @@ t80pa Z80CPU (
 	.DIRSet(DIRSet)
 
 );
+`endif
 
 z80_regset #(16'hB7BB) regset (
 	.execute_addr(execute_addr),

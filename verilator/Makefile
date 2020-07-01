@@ -73,6 +73,7 @@ V_SRC = \
 ../rtl/LaserKeyboard.sv \
 ../rtl/vz_loader.sv \
 ../rtl/cass_ram_16k_altera.v \
+../rtl/z80_regset.sv \
 	./sim/sprom.sv \
 	./sim/spram.sv \
 	./sim/bram.sv \

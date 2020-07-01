@@ -77,7 +77,7 @@ LASER310_TOP LASER310_TOP(
 	.dn_wr(ioctl_wr),
 	.led(),
 	.led2(),
-        .SWITCH({"00000101"}),
+        .SWITCH(10'b0000000101),
         .UART_RXD(),
         .UART_TXD()
         );
