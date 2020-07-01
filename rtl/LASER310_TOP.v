@@ -405,7 +405,7 @@ t80pa Z80CPU (
 	.int_n(CPU_INT_N),
 	.nmi_n(1'b1),
 	.busrq_n(CPU_BUSRQ_N),
-	.di(CPU_DI),
+	.di(CPU_IORQ_N ? CPU_DI : CPU_D_INPORT),
 
 	.DIR(DIR),
 	.DIRSet(DIRSet)
@@ -545,17 +545,13 @@ assign RAM_89AB_WR		= ({ADDRESS_89AB,MEM_OP_WR,CPU_WR,CPU_IORQ} == 4'b1110)?1'b1
 assign RAM_CDEF_WR		= ({ADDRESS_CDEF,MEM_OP_WR,CPU_WR,CPU_IORQ} == 4'b1110)?1'b1:1'b0;
 
 
-assign CPU_DI = 	ADDRESS_ROM				? SYS_ROM_DATA			:
+assign CPU_DI = 	
+					ADDRESS_ROM				? SYS_ROM_DATA			:
 						ADDRESS_AUTOSTARTROM	? AUTOSTART_ROM_DATA	:
 						ADDRESS_DOSROM			? DOS_ROM_DATA			:
 `ifdef BOOT_ROM_6000
 						ADDRESS_BOOTROM_6000	? BOOT_ROM_6000_DATA	:
 `endif
-// AJS put joystick code in
-ADDRESS_JOYSTICK_1_A ? JOYSTICK_1_DATA_A :
-ADDRESS_JOYSTICK_1_B ? JOYSTICK_1_DATA_B :
-ADDRESS_JOYSTICK_2_A ? JOYSTICK_2_DATA_A :
-ADDRESS_JOYSTICK_2_B ? JOYSTICK_2_DATA_B :
 						ADDRESS_IO				? LATCHED_KEY_DATA		:
 						ADDRESS_VRAM			? VRAM_DATA_OUT			:
 `ifdef BASE_RAM_16K
@@ -1322,13 +1318,23 @@ FDC_IF FDC_U (
 
 // PAGE 10 from tech manual
 // alanswx
-wire ADDRESS_IO_J1A =	(CPU_A[7:0] == 8'h2E)?1'b1:1'b0;
-wire ADDRESS_JOYSTICK_1_A = (CPU_IORQ&ADDRESS_IO_J1A);
+// AJS put joystick code in
+
+//assign CPU_D_INPORT	=	ADDRESS_IO_FDC			? LATCHED_IO_FDC	:
+//						8'hzz;
+wire [7:0] CPU_D_INPORT	=	
+	ADDRESS_JOYSTICK_1_A ? JOYSTICK_1_DATA_A :
+	ADDRESS_JOYSTICK_1_B ? JOYSTICK_1_DATA_B :
+	ADDRESS_JOYSTICK_2_A ? JOYSTICK_2_DATA_A :
+	ADDRESS_JOYSTICK_2_B ? JOYSTICK_2_DATA_B :
+						8'hzz;
+
+wire ADDRESS_JOYSTICK_1_A = (CPU_A[7:0] == 8'h2E)?1'b1:1'b0;
 wire [7:0] JOYSTICK_1_DATA_A = { 3'b111, ~fire_1, ~right_1, ~left_1,~down_1,~up_1 };
-wire ADDRESS_JOYSTICK_1_B = (CPU_IORQ&(CPU_A[7:0]==8'h2D))?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_1_B = (CPU_A[7:0] == 8'h2D)?1'b1:1'b0;
 wire [7:0] JOYSTICK_1_DATA_B = { 3'b111, ~arm_1, 4'b1111};
-wire ADDRESS_JOYSTICK_2_A = (CPU_IORQ&(CPU_A[7:0]==8'h2E))?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_2_A = (CPU_A[7:0] == 8'h2B)?1'b1:1'b0;
 wire [7:0] JOYSTICK_2_DATA_A = { 3'b111, ~fire_2, ~right_2, ~left_2,~down_2,~up_2 };
-wire ADDRESS_JOYSTICK_2_B = (CPU_IORQ&(CPU_A[7:0]==8'h2D))?1'b1:1'b0;
+wire ADDRESS_JOYSTICK_2_B = (CPU_A[7:0] == 8'h27)?1'b1:1'b0;
 wire [7:0] JOYSTICK_2_DATA_B = { 3'b111, ~arm_2, 4'b1111};
 endmodule
